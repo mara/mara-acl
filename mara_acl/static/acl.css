@@ -1,0 +1,66 @@
+#permissions-container {
+    overflow: auto;
+}
+
+#permissions-container > table {
+    width: auto;
+}
+
+#permissions-container thead {
+    border-bottom: 1px solid #eee;
+    background-color: #fff;
+    opacity: 0.9;
+}
+
+#permissions-container thead > tr:first-child > td {
+    padding-top: 10px;
+}
+
+#permissions-container tr > td {
+    vertical-align: top;
+    padding-right: 10px;
+    padding-bottom: 5px;
+}
+
+#permissions-container td.role {
+    font-weight: bold;
+}
+
+#permissions-container tr.role > td {
+    border-top: 1px solid #eee;
+    padding-top: 4px;
+}
+
+#permissions-container td.user {
+    white-space: nowrap;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+#permissions-container td.permission {
+    font-family: "FontAwesome";
+}
+
+#permissions-container td.allowed:after {
+    content: "\f058";
+    cursor: pointer;
+    color: #5cb85c;
+}
+
+#permissions-container td.parent-allowed:after {
+    content: "\f00c";
+    color: #dff0d8;
+}
+
+#permissions-container td.child-allowed:after {
+    content: "\f055";
+    cursor: pointer;
+    color: #dff0d8;
+}
+
+#permissions-container td.not-allowed:after {
+    content: "\f056";
+    cursor: pointer;
+    color: #ccc;
+}
+

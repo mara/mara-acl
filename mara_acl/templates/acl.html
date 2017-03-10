@@ -1,0 +1,62 @@
+<div id="permissions-container"></div>
+
+
+<div class="modal fade" id="inviteUserModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Invite new user</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ acl_base_url }}/add-user" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="new-user-email" class="control-label">Email:</label>
+                        <input name="email" type="email" class="form-control" id="new-user-email" required="required">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-user-role" class="control-label">Role:</label>
+                        <input name="role" id="new-user-role" class="form-control" type="text" list="new-user-roles"
+                               required="required">
+                        <datalist id="new-user-roles">{% for role in roles %}
+                            <option value="{{ roles[role].name }}"/>
+                        {% endfor %}
+                        </datalist>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Invite</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<span id="user-role-input" class="form-inline" style="display: none;">
+    <input type="text" class="form-control" list="roles"
+           autocomplete="on" placeholder="New role">
+    <datalist id="roles">
+        {% for role in roles -%}
+            <option value="{{ roles[role].name }}"/>
+        {% endfor -%}
+    </datalist>
+    </input>
+</span>
+
+
+<form id="permissions-form" method="post" action="{{ acl_base_url }}/save-permissions">
+    <input id="permissions-input" type="hidden" name="permissions"/>
+</form>
+
+
+<script type="text/javascript">
+    var roles = {{ roles | tojson | safe }};
+    var permissions = {{ permissions | tojson | safe }};
+    var resources = {{ resources | tojson | safe }};
+    var aclBaseUrl = {{ acl_base_url | tojson | safe }};
+    var pageTop = {{ page_top }};
+</script>
