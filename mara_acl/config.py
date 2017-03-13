@@ -26,7 +26,7 @@ def initial_permissions() -> [[str, str]]:
 
 
 def email_http_header() -> str:
-    """The email header that contains the email of the authenticated user"""
+    """The http header that contains the email of the authenticated user"""
     return 'X_FORWARDED_EMAIL'
 
 
