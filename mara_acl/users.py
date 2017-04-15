@@ -34,17 +34,12 @@ class User(Base):
 def login(email: str) -> typing.Union[response.Response, bool]:
     """Logs in a previously authenticated user. Returns an error response or True upon successful login"""
 
-    # exclude some uris from login
-    for uri in config.whitelisted_uris():
-        if flask.request.path.startswith(uri): return None
-
     with dbs.session_context('mara') as session:  # type: dbs.Session
         # get user from db
         user = session.query(User).get(email)  # type: User
 
         if not user:
             is_first_user = False if session.query(User).first() else True
-            print(is_first_user)
 
             if is_first_user or config.automatically_create_accounts_for_new_users():
                 # when first user or when configured, create a new user for a new email
@@ -59,18 +54,21 @@ def login(email: str) -> typing.Union[response.Response, bool]:
                             + '</b> role. If you need more privileges, please contact the person that invited you.',
                             'info')
             else:
-                flask.abort(403, 'Hi ' + email + ',<br/><br/>We haven\'t created an account for you yet. '
-                            + 'Please contact the person that gave you the link this site to fix that.')
+                return False
 
         # store user in flask g object for later access
         # http://flask.pocoo.org/docs/latest/api/#flask.g
         setattr(flask.g, 'current_user_email', user.email)
         setattr(flask.g, 'current_user_role', user.role)
-
+        return True
 
 def current_user_email():
     """the email of the currently logged in user"""
     return getattr(flask.g, 'current_user_email')
+
+def current_user_role():
+    """the role of the currently logged in user"""
+    return getattr(flask.g, 'current_user_role')
 
 
 def add_user(email: str, role: str):

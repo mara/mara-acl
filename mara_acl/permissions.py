@@ -3,7 +3,7 @@
 import flask
 import sqlalchemy
 import sqlalchemy.ext.declarative
-from mara_acl import config, keys
+from mara_acl import config, keys, users
 from mara_db import dbs
 from mara_page import acl
 from sqlalchemy.ext.declarative import declarative_base
@@ -42,6 +42,14 @@ def current_user_has_permission(resource: acl.AclResource) -> bool:
 def current_user_has_permissions(resources: [acl.AclResource]) -> [[acl.AclResource, bool]]:
     """Determines whether the currently logged in user has permissions for a list of resources"""
     return map(lambda resource: [resource, True], resources)
+
+def user_has_permission(email: str, resource: acl.AclResource) -> bool:
+    """Whether a user is allowed to access a specific resource"""
+    if users.login(email) != True:
+        print(f'could not login user "{email}"')
+        return False
+
+    return current_user_has_permission(resource)
 
 
 def all_permissions() -> {str: [str, str]}:
