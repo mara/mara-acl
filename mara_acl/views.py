@@ -88,7 +88,7 @@ def save_permissions():
 @mara_acl.before_app_request
 def login():
     # exclude some uris from login
-    if (any(uri in flask.request.path for uri in config.whitelisted_uris())):
+    if (any(flask.request.path.startswith(uri) for uri in config.whitelisted_uris())):
         return None
 
     email = flask.request.headers.get(config.email_http_header()) or 'guest@localhost'

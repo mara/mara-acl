@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='mara-acl',
-    version='1.0.2',
+    version='1.0.3',
 
     description='Default ACL implementation for Mara',
 

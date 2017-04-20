@@ -1,9 +1,9 @@
 # Changelog
 
-## 1.0.2
+## 1.0.2 - 1.0.3
 *2017-04-20*
 
-- Changed uri whitelisting behavior + bug fix
+- Login bug fix
 
 
 ## 1.0.1
