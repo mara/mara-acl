@@ -5,7 +5,7 @@ import json
 import flask
 from mara_acl import config, keys, permissions, users
 from mara_db import dbs
-from mara_page import acl, navigation, response
+from mara_page import acl, navigation, response, _, bootstrap
 
 mara_acl = flask.Blueprint('mara_acl', __name__, static_folder='static', url_prefix='/acl', template_folder='templates')
 
@@ -37,10 +37,13 @@ def acl_page():
 
     resources = resource_tree('All', 'resource__All', config.resources())
 
+    def card(body):
+        return _.div(style="color:red")[body]
+
     return response.Response(
         flask.render_template('acl.html', roles=roles, permissions=permissions.all_permissions(),
                               resources=resources, acl_base_url=flask.url_for('mara_acl.acl_page'),
-                              page_top=config.ui_page_top()),
+                              page_top=config.ui_page_top(), bootstrap_card=bootstrap.card),
         title='Users, Roles & Permissions',
         js_files=[
             flask.url_for('mara_acl.static', filename='acl.js'),
@@ -95,4 +98,3 @@ def login():
     if not users.login(email):
         flask.abort(403, 'Hi ' + email + ',<br/><br/>We haven\'t created an account for you yet. '
                     + 'Please contact the person that gave you the link this site to fix that.')
-

@@ -33,6 +33,7 @@ class User(Base):
 
 def login(email: str) -> typing.Union[response.Response, bool]:
     """Logs in a previously authenticated user. Returns an error response or True upon successful login"""
+    email = email.lower() # make sure always same case is used
 
     with dbs.session_context('mara') as session:  # type: dbs.Session
         # get user from db
@@ -73,6 +74,7 @@ def current_user_role():
 
 def add_user(email: str, role: str):
     """adds a new user"""
+    email = email.lower() # make sure always same case is used
 
     if (not '@' in parseaddr(email)[1]):
         flask.flash('<b>"' + email + '"</b> is not a valid email address', category='warning')

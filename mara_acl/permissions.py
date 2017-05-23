@@ -45,6 +45,8 @@ def current_user_has_permissions(resources: [acl.AclResource]) -> [[acl.AclResou
 
 def user_has_permission(email: str, resource: acl.AclResource) -> bool:
     """Whether a user is allowed to access a specific resource"""
+    email = email.lower() # make sure always same case is used
+
     if users.login(email) != True:
         print(f'could not login user "{email}"')
         return False
