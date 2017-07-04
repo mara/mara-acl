@@ -92,8 +92,8 @@ def add_user(email: str, role: str):
         session.add(User(email, role))
 
     flask.flash('Added user "' + email
-                + '". No email has been sent, please manually send an invitation via <a href="mailto:'
-                + email + '">email</a> or chat.', category='success')
+                + '". No email has been sent, please manually send an invitation via <a href=\'mailto:'
+                + email + '\'>email</a> or chat.', category='success')
 
 
 def delete_user(email):
