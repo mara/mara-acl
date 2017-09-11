@@ -11,9 +11,11 @@ mara_acl = flask.Blueprint('mara_acl', __name__, static_folder='static', url_pre
 
 acl_resource = acl.AclResource(name='Users', rank=100)
 
-navigation_entry = navigation.NavigationEntry(
-    label='Users & Permissions', uri_fn=lambda: flask.url_for('mara_acl.acl_page'), icon='users', rank=200,
-    description='User management, roles & permissions')
+
+def navigation_entry():
+    return navigation.NavigationEntry(
+        label='Users & Permissions', uri_fn=lambda: flask.url_for('mara_acl.acl_page'), icon='users', rank=200,
+        description='User management, roles & permissions')
 
 
 @mara_acl.route('')
