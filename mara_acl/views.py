@@ -45,15 +45,10 @@ def acl_page():
     return response.Response(
         flask.render_template('acl.html', roles=roles, permissions=permissions.all_permissions(),
                               resources=resources, acl_base_url=flask.url_for('mara_acl.acl_page'),
-                              page_top=config.ui_page_top(), bootstrap_card=bootstrap.card),
+                              bootstrap_card=bootstrap.card),
         title='Users, Roles & Permissions',
-        js_files=[
-            flask.url_for('mara_acl.static', filename='acl.js'),
-            flask.url_for('mara_acl.static', filename='jquery.floatThead.min.js')
-        ],
-        css_files=[
-            flask.url_for('mara_acl.static', filename='acl.css')
-        ],
+        js_files=[flask.url_for('mara_acl.static', filename='acl.js')],
+        css_files=[flask.url_for('mara_acl.static', filename='acl.css')],
         action_buttons=[
             response.ActionButton('javascript:savePermissions()', 'Save', 'Save permissions', 'save'),
             response.ActionButton('javascript:inviteNewUser()', 'Invite', 'Invite new user', 'plus')

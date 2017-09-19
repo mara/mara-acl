@@ -169,12 +169,11 @@ function updatePermissionTable() {
 
     logTimeSinceStart('tbody');
 
-    $('#permissions-container').empty().append($('<table class="table-hover">').append(thead).append(tbody));
+    $('#permissions-container').empty().append($('<table class="mara-table table-hover mara-table-float-header">').append(thead).append(tbody));
 
-    $('#permissions-container > table').floatThead({
-        top: pageTop,
-        position: 'absolute'
-    });
+    if (window.floatMaraTableHeaders()) {
+        floatMaraTableHeaders();
+    }
 
     logTimeSinceStart('dom update');
 }

@@ -34,7 +34,3 @@ def whitelisted_uris() -> [str]:
     """Which uris to exclude from the acl"""
     return ['/static/']
 
-
-def ui_page_top() -> int:
-    """The vertical offset of the acl page in pixels"""
-    return 60
