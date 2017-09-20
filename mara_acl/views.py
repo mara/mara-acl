@@ -7,7 +7,7 @@ from mara_acl import config, keys, permissions, users
 from mara_db import dbs
 from mara_page import acl, navigation, response, _, bootstrap
 
-mara_acl = flask.Blueprint('mara_acl', __name__, static_folder='static', url_prefix='/acl', template_folder='templates')
+blueprint = flask.Blueprint('mara_acl', __name__, static_folder='static', url_prefix='/acl', template_folder='templates')
 
 acl_resource = acl.AclResource(name='Users', rank=100)
 
@@ -18,7 +18,7 @@ def navigation_entry():
         description='User management, roles & permissions')
 
 
-@mara_acl.route('')
+@blueprint.route('')
 @acl.require_permission(acl_resource)
 def acl_page():
     roles = {}
@@ -55,14 +55,14 @@ def acl_page():
         ])
 
 
-@mara_acl.route('/add-user', methods=['POST'])
+@blueprint.route('/add-user', methods=['POST'])
 @acl.require_permission(acl_resource)
 def add_user():
     users.add_user(flask.request.form['email'].strip(), flask.request.form['role'].strip())
     return flask.redirect(flask.url_for('mara_acl.acl_page'))
 
 
-@mara_acl.route('/delete-user/<string:email>')
+@blueprint.route('/delete-user/<string:email>')
 @acl.require_permission(acl_resource)
 def deleteuser_handler(email):
     users.delete_user(email)
@@ -70,7 +70,7 @@ def deleteuser_handler(email):
     return flask.redirect(flask.url_for('mara_acl.acl_page'))
 
 
-@mara_acl.route('/change-user-role/<string:email>/<string:new_role>')
+@blueprint.route('/change-user-role/<string:email>/<string:new_role>')
 @acl.require_permission(acl_resource)
 def change_role(email, new_role):
     users.change_role(email, new_role)
@@ -78,14 +78,14 @@ def change_role(email, new_role):
     return flask.redirect(flask.url_for('mara_acl.acl_page'))
 
 
-@mara_acl.route('/save-permissions', methods=['POST'])
+@blueprint.route('/save-permissions', methods=['POST'])
 @acl.require_permission(acl_resource)
 def save_permissions():
     permissions.save_permissions(json.loads(flask.request.form['permissions']))
     return flask.redirect(flask.url_for('mara_acl.acl_page'))
 
 
-@mara_acl.before_app_request
+@blueprint.before_app_request
 def login():
     # exclude some uris from login
     if (any(flask.request.path.startswith(uri) for uri in config.whitelisted_uris())):
