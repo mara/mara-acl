@@ -1,12 +1,19 @@
 # Changelog
 
+## 1.1.0 
+*2017-09-21*
+
+- Adapt to changes in mara ui
+- bug fix in invite new user feature
+
+
 ## 1.0.4 
 *2017-04-20*
 
 - Emails are always converted to lowercase before processing
 - Adapted to mara ui changes
 
-*required changes*
+**required changes**
 
 - Convert all users to lowercase with `update acl_user set email = lower(email);`
 
