@@ -8,6 +8,7 @@ from mara_acl import config, permissions
 from mara_db import dbs
 from mara_page import response
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import Session
 
 Base = declarative_base()
 
@@ -35,7 +36,7 @@ def login(email: str) -> typing.Union[response.Response, bool]:
     """Logs in a previously authenticated user. Returns an error response or True upon successful login"""
     email = email.lower() # make sure always same case is used
 
-    with dbs.session_context('mara') as session:  # type: dbs.Session
+    with dbs.session_context('mara') as session:  # type: Session
         # get user from db
         user = session.query(User).get(email)  # type: User
 
@@ -84,7 +85,7 @@ def add_user(email: str, role: str):
         flask.flash('Could not add <b>"' + email + '"</b>, missing role', category='warning')
         return
 
-    with dbs.session_context('mara') as session:  # type: dbs.Session
+    with dbs.session_context('mara') as session:  # type: Session
         if session.query(User).get(email):
             flask.flash('User <b>"' + email + '"</b> already exists', category='warning')
             return
@@ -98,12 +99,12 @@ def add_user(email: str, role: str):
 
 def delete_user(email):
     """deletes a user"""
-    with dbs.session_context('mara') as session:  # type: dbs.Session
+    with dbs.session_context('mara') as session:  # type: Session
         session.delete(session.query(User).get(email))
 
 
 def change_role(email, new_role):
     """sets a new role for a user"""
-    with dbs.session_context('mara') as session:  # type: dbs.Session
+    with dbs.session_context('mara') as session:  # type: Session
         user = session.query(User).get(email)  # type: User
         user.role = new_role
