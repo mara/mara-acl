@@ -1,10 +1,11 @@
 """Maintenance and querying of permissions"""
 
 import flask
+import mara_db.sqlalchemy
 import sqlalchemy
 import sqlalchemy.ext.declarative
+import sqlalchemy.orm
 from mara_acl import config, keys, users
-from mara_db import dbs
 from mara_page import acl
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -28,7 +29,7 @@ class Permission(Base):
 
 def current_user_has_permission(resource: acl.AclResource) -> bool:
     """Returns whether the current user is allowed to access a specific resource"""
-    with dbs.session_context('mara') as session:  # type: dbs.Session
+    with mara_db.sqlalchemy.session_context('mara') as session:  # type: sqlalchemy.orm.Session
         if session.execute("SELECT EXISTS (SELECT 1 FROM acl_permission WHERE '"
                                    + keys.resource_key(resource) + "' LIKE CONCAT(resource_key,'%') AND '"
                                    + keys.user_key(getattr(flask.g, 'current_user_role'),
@@ -43,9 +44,10 @@ def current_user_has_permissions(resources: [acl.AclResource]) -> [[acl.AclResou
     """Determines whether the currently logged in user has permissions for a list of resources"""
     return map(lambda resource: [resource, True], resources)
 
+
 def user_has_permission(email: str, resource: acl.AclResource) -> bool:
     """Whether a user is allowed to access a specific resource"""
-    email = email.lower() # make sure always same case is used
+    email = email.lower()  # make sure always same case is used
 
     if users.login(email) != True:
         print(f'could not login user "{email}"')
@@ -56,7 +58,7 @@ def user_has_permission(email: str, resource: acl.AclResource) -> bool:
 
 def all_permissions() -> {str: [str, str]}:
     """Returns all currently stored permissions"""
-    with dbs.session_context('mara') as session:  # type: dbs.Session
+    with mara_db.sqlalchemy.session_context('mara') as session:  # type: sqlalchemy.orm.Session
         permissions = {}
         for permission in session.query(Permission).all():  # type: Permission
             permissions[permission.key()] = [permission.user_key, permission.resource_key]

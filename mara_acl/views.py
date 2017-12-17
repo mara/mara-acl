@@ -3,11 +3,12 @@
 import json
 
 import flask
+import mara_db.sqlalchemy
 from mara_acl import config, keys, permissions, users
-from mara_db import dbs
 from mara_page import acl, navigation, response, _, bootstrap
 
-blueprint = flask.Blueprint('mara_acl', __name__, static_folder='static', url_prefix='/acl', template_folder='templates')
+blueprint = flask.Blueprint('mara_acl', __name__, static_folder='static', url_prefix='/acl',
+                            template_folder='templates')
 
 acl_resource = acl.AclResource(name='Users', rank=100)
 
@@ -23,7 +24,7 @@ def navigation_entry():
 def acl_page():
     roles = {}
 
-    with dbs.session_context('mara') as session:  # type: dbs.Session
+    with mara_db.sqlalchemy.session_context('mara') as session:  # type: sqlalchemy.orm.Session
         for user in session.query(users.User).order_by('role').all():  # type: users.User
             rolekey = keys.user_key(user.role)
             if not rolekey in roles:
