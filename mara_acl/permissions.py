@@ -78,7 +78,7 @@ def save_permissions(permissions: {str: [str, str]}):
 
     number_of_changes = 0;
 
-    with dbs.session_context('mara') as session:  # type: dbs.Session
+    with mara_db.sqlalchemy.session_context('mara') as session:  # type: sqlalchemy.orm.Session
         for new_permission in new_permissions:
             session.add(Permission(permissions[new_permission][0], permissions[new_permission][1]))
             number_of_changes += 1
@@ -98,7 +98,7 @@ def save_permissions(permissions: {str: [str, str]}):
 
 def initialize_permissions():
     """Deletes all existing permissions and adds the configured default permissions"""
-    with dbs.session_context('mara') as session:  # type: dbs.Session
+    with mara_db.sqlalchemy.session_context('mara') as session:  # type: sqlalchemy.orm.Session
         session.query(Permission).delete()
         session.commit()
         save_permissions(config.initial_permissions())
