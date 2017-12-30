@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0
+*2017-12-30*
+
+- Adapt to changes in the [mara-db](https://github.com/mara/mara-db) package
+
+
 ## 1.1.0 
 *2017-09-21*
 
