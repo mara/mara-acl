@@ -23,7 +23,7 @@ ResourceNode = function (name, key, parent, children) {
             }
         }
     }
-}
+};
 
 // all resources in a richer tree
 var resourceTree = new ResourceNode(resources.name, resources.key, null, resources.children);

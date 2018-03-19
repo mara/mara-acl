@@ -8,6 +8,7 @@ import sqlalchemy.orm
 from mara_acl import config, keys, users
 from mara_page import acl
 from sqlalchemy.ext.declarative import declarative_base
+import psycopg2.extensions
 
 Base = declarative_base()
 
@@ -23,21 +24,14 @@ class Permission(Base):
         self.resource_key = resource_key
         super().__init__()
 
-    def key(self) -> str:
-        return self.user_key + '__' + self.resource_key
-
 
 def current_user_has_permission(resource: acl.AclResource) -> bool:
     """Returns whether the current user is allowed to access a specific resource"""
-    with mara_db.sqlalchemy.session_context('mara') as session:  # type: sqlalchemy.orm.Session
-        if session.execute("SELECT EXISTS (SELECT 1 FROM acl_permission WHERE '"
-                                   + keys.resource_key(resource) + "' LIKE CONCAT(resource_key,'%') AND '"
-                                   + keys.user_key(getattr(flask.g, 'current_user_role'),
-                                                   getattr(flask.g, 'current_user_email'))
-                                   + "' LIKE CONCAT(user_key,'%'))").scalar():
-            return True
-        else:
-            return False
+    with mara_db.sqlalchemy.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
+        cursor.execute(f"""SELECT EXISTS (SELECT 1 FROM acl_permission WHERE {'%s'} LIKE CONCAT(resource_key, '%%') AND {'%s'} LIKE CONCAT(user_key,'%%'))""",
+                       (keys.resource_key(resource),
+                        keys.user_key(getattr(flask.g, 'current_user_role'), getattr(flask.g, 'current_user_email'))))
+        return cursor.fetchone()[0]
 
 
 def current_user_has_permissions(resources: [acl.AclResource]) -> [[acl.AclResource, bool]]:
@@ -58,10 +52,11 @@ def user_has_permission(email: str, resource: acl.AclResource) -> bool:
 
 def all_permissions() -> {str: [str, str]}:
     """Returns all currently stored permissions"""
-    with mara_db.sqlalchemy.session_context('mara') as session:  # type: sqlalchemy.orm.Session
+    with mara_db.sqlalchemy.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
+        cursor.execute("SELECT user_key, resource_key FROM acl_permission")
         permissions = {}
-        for permission in session.query(Permission).all():  # type: Permission
-            permissions[permission.key()] = [permission.user_key, permission.resource_key]
+        for (user_key, resource_key) in cursor.fetchall():
+            permissions[user_key + '__' + resource_key] = [user_key, resource_key]
         return permissions
 
 
@@ -76,18 +71,17 @@ def save_permissions(permissions: {str: [str, str]}):
     new_permissions = list(set(permissions) - set(current_permissions))
     deleted_permissions = list(set(current_permissions) - set(permissions))
 
-    number_of_changes = 0;
+    number_of_changes = 0
 
-    with mara_db.sqlalchemy.session_context('mara') as session:  # type: sqlalchemy.orm.Session
+    with mara_db.sqlalchemy.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
         for new_permission in new_permissions:
-            session.add(Permission(permissions[new_permission][0], permissions[new_permission][1]))
+            cursor.execute(f"INSERT INTO acl_permission (user_key, resource_key) VALUES ({'%s, %s'})",
+                           (permissions[new_permission][0], permissions[new_permission][1]))
             number_of_changes += 1
 
         for deleted_permission in deleted_permissions:
-            session.delete(session.query(Permission)
-                           .filter(Permission.user_key == current_permissions[deleted_permission][0])
-                           .filter(Permission.resource_key == current_permissions[deleted_permission][1])
-                           .first())
+            cursor.execute(f"DELETE FROM acl_permission WHERE user_key = {'%s'} AND resource_key = {'%s'}",
+                           (current_permissions[deleted_permission][0], current_permissions[deleted_permission][1]))
             number_of_changes += 1
 
     if number_of_changes:
@@ -98,7 +92,9 @@ def save_permissions(permissions: {str: [str, str]}):
 
 def initialize_permissions():
     """Deletes all existing permissions and adds the configured default permissions"""
-    with mara_db.sqlalchemy.session_context('mara') as session:  # type: sqlalchemy.orm.Session
-        session.query(Permission).delete()
-        session.commit()
-        save_permissions(config.initial_permissions())
+    with mara_db.sqlalchemy.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
+        cursor.execute('TRUNCATE acl_permission')
+        for user_key, resource_key in config.initial_permissions().values():
+            cursor.execute(f"INSERT INTO acl_permission (user_key, resource_key) VALUES ({'%s, %s'})",
+                           (user_key, resource_key))
+

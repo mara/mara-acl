@@ -6,9 +6,16 @@ import flask
 import mara_db.sqlalchemy
 from mara_acl import config, keys, permissions, users
 from mara_page import acl, navigation, response, _, bootstrap
+import psycopg2.extensions
 
 blueprint = flask.Blueprint('mara_acl', __name__, static_folder='static', url_prefix='/acl',
                             template_folder='templates')
+
+@blueprint.before_app_first_request
+def load_resource_tree():
+    config.resources() # load the tree of resources so that parents / children become linked
+
+
 
 acl_resource = acl.AclResource(name='Users', rank=100)
 
@@ -24,12 +31,13 @@ def navigation_entry():
 def acl_page():
     roles = {}
 
-    with mara_db.sqlalchemy.session_context('mara') as session:  # type: sqlalchemy.orm.Session
-        for user in session.query(users.User).order_by('role').all():  # type: users.User
-            rolekey = keys.user_key(user.role)
+    with mara_db.sqlalchemy.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
+        cursor.execute(f'SELECT email, role FROM acl_user ORDER BY role')
+        for email, role in cursor.fetchall():
+            rolekey = keys.user_key(role)
             if not rolekey in roles:
-                roles[rolekey] = {'name': user.role, 'users': {}}
-            roles[keys.user_key(user.role)]['users'][keys.user_key(user.role, user.email)] = user.email
+                roles[rolekey] = {'name': role, 'users': {}}
+            roles[keys.user_key(role)]['users'][keys.user_key(role, email)] = email
 
     def resource_tree(name, key, children):
         result = {'name': name, 'key': key, 'children': []}
@@ -39,9 +47,6 @@ def acl_page():
         return result
 
     resources = resource_tree('All', 'resource__All', config.resources())
-
-    def card(body):
-        return _.div(style="color:red")[body]
 
     return response.Response(
         flask.render_template('acl.html', roles=roles, permissions=permissions.all_permissions(),
@@ -90,6 +95,13 @@ def save_permissions():
 def login():
     # exclude some uris from login
     if (any(flask.request.path.startswith(uri) for uri in config.whitelisted_uris())):
+        return None
+
+    # exclude static folders of blueprints
+    if (any(flask.request.path.startswith(uri) for uri
+            in [blueprint.url_prefix + blueprint.static_url_path
+                for blueprint in flask.current_app.blueprints.values()
+           if blueprint.static_url_path and blueprint.url_prefix])):
         return None
 
     email = flask.request.headers.get(config.email_http_header()) or 'guest@localhost'

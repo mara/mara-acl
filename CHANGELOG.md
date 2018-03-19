@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0
+*2018-03-19*
+
+- Replace sqlalchemy orm query logic with plain sql queries in order to avoid idling zombie connections
+ 
+
 ## 1.2.0
 *2017-12-30*
 
