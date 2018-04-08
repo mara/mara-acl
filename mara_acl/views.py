@@ -3,7 +3,7 @@
 import json
 
 import flask
-import mara_db.sqlalchemy
+import mara_db.postgresql
 from mara_acl import config, keys, permissions, users
 from mara_page import acl, navigation, response, _, bootstrap
 import psycopg2.extensions
@@ -31,7 +31,7 @@ def navigation_entry():
 def acl_page():
     roles = {}
 
-    with mara_db.sqlalchemy.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
+    with mara_db.postgresql.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
         cursor.execute(f'SELECT email, role FROM acl_user ORDER BY role')
         for email, role in cursor.fetchall():
             rolekey = keys.user_key(role)

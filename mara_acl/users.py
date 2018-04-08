@@ -7,7 +7,7 @@ import psycopg2.extensions
 import sqlalchemy.orm
 from sqlalchemy.ext.declarative import declarative_base
 
-import mara_db.sqlalchemy
+import mara_db.postgresql
 from mara_acl import config, permissions
 from mara_page import response
 
@@ -37,7 +37,7 @@ def login(email: str) -> typing.Union[response.Response, bool]:
     """Logs in a previously authenticated user. Returns an error response or True upon successful login"""
     email = email.lower()  # make sure always same case is used
 
-    with mara_db.sqlalchemy.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
+    with mara_db.postgresql.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
         # get user from db
         cursor.execute(f"SELECT email, role FROM acl_user WHERE email = {'%s'}", (email,))
         result = cursor.fetchone()
@@ -92,7 +92,7 @@ def add_user(email: str, role: str):
         flask.flash('Could not add <b>"' + email + '"</b>, missing role', category='warning')
         return
 
-    with mara_db.sqlalchemy.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
+    with mara_db.postgresql.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
         # get user from db
         cursor.execute(f"SELECT 1 FROM acl_user WHERE email = {'%s'}", (email,))
         if cursor.fetchone():
@@ -108,11 +108,11 @@ def add_user(email: str, role: str):
 
 def delete_user(email):
     """deletes a user"""
-    with mara_db.sqlalchemy.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
+    with mara_db.postgresql.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
         cursor.execute(f"DELETE FROM acl_user WHERE email = {'%s'}", (email,))
 
 
 def change_role(email, new_role):
     """sets a new role for a user"""
-    with mara_db.sqlalchemy.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
+    with mara_db.postgresql.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
         cursor.execute(f"UPDATE acl_user SET role = {'%s'} WHERE email = {'%s'}", (new_role, email))
