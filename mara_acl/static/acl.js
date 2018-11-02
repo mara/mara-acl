@@ -147,9 +147,9 @@ function updatePermissionTable() {
             (function () {
                 var user = role.users[key];
 
-                var td = $('<td class="user">' + user + ' <a href="' + aclBaseUrl + '/delete-user/'
-                    + encodeURIComponent(user) + '" title="Delete user"><span class="fa fa-trash"/></a> </td>');
-                var a = $('<a href="javascript:void(0)" title="Change role"><span class="fa fa-pencil"/></a>')
+                var td = $('<td class="user">' + user + '&nbsp;&nbsp;<a href="' + aclBaseUrl + '/delete-user/'
+                    + encodeURIComponent(user) + '" title="Delete user"><span class="fa fa-trash-alt"/></a>&nbsp;&nbsp;</td>');
+                var a = $('<a href="javascript:void(0)" title="Change role"><span class="fa fa-pencil-alt"/></a>')
                     .click(function () {
                         $('.user-role-input').remove();
                         var span = $('#user-role-input').clone().addClass('user-role-input');

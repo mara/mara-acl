@@ -38,7 +38,7 @@
 }
 
 #permissions-container td.permission {
-    font-family: "FontAwesome";
+    font-family: "Font Awesome 5 Free", "FontAwesome";
 }
 
 #permissions-container td.allowed:after {
@@ -59,7 +59,7 @@
 }
 
 #permissions-container td.not-allowed:after {
-    content: "\f056";
+    content: "\f068";
     cursor: pointer;
     color: #ccc;
 }
