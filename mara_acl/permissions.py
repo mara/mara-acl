@@ -36,7 +36,20 @@ def current_user_has_permission(resource: acl.AclResource) -> bool:
 
 def current_user_has_permissions(resources: [acl.AclResource]) -> [[acl.AclResource, bool]]:
     """Determines whether the currently logged in user has permissions for a list of resources"""
-    return map(lambda resource: [resource, True], resources)
+    user_key = keys.user_key(getattr(flask.g, 'current_user_role'), getattr(flask.g, 'current_user_email'))
+
+    with mara_db.postgresql.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
+        # create a select statement for each resource and combine them with ' UNION ALL '
+        cursor.execute(' UNION ALL '.join([
+            cursor.mogrify(f"""
+SELECT EXISTS (SELECT 1 FROM acl_permission 
+               WHERE {'%s'} LIKE CONCAT(resource_key, '%%') 
+                   AND {'%s'} LIKE CONCAT(user_key,'%%'))
+""",
+                           (keys.resource_key(resource), user_key)).decode("utf-8")
+            for resource in resources]))
+
+        return (list(zip(resources, [allowed for (allowed,) in cursor.fetchall()])))
 
 
 def user_has_permission(email: str, resource: acl.AclResource) -> bool:
