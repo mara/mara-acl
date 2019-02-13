@@ -3,18 +3,19 @@
 import json
 
 import flask
+import psycopg2.extensions
+
 import mara_db.postgresql
 from mara_acl import config, keys, permissions, users
-from mara_page import acl, navigation, response, _, bootstrap
-import psycopg2.extensions
+from mara_page import acl, navigation, response, bootstrap
 
 blueprint = flask.Blueprint('mara_acl', __name__, static_folder='static', url_prefix='/acl',
                             template_folder='templates')
 
+
 @blueprint.before_app_first_request
 def load_resource_tree():
-    config.resources() # load the tree of resources so that parents / children become linked
-
+    config.resources()  # load the tree of resources so that parents / children become linked
 
 
 acl_resource = acl.AclResource(name='Users', rank=100)
@@ -93,15 +94,15 @@ def save_permissions():
 
 @blueprint.before_app_request
 def login():
-    # exclude some uris from login
-    if (any(flask.request.path.startswith(uri) for uri in config.whitelisted_uris())):
+    # exclude uris that have been explicitly white listed
+    if any(flask.request.path.startswith(uri) for uri in config.whitelisted_uris()):
         return None
 
     # exclude static folders of blueprints
-    if (any(flask.request.path.startswith(uri) for uri
-            in [blueprint.url_prefix + blueprint.static_url_path
-                for blueprint in flask.current_app.blueprints.values()
-           if blueprint.static_url_path and blueprint.url_prefix])):
+    if any(flask.request.path.startswith(uri) for uri
+           in [blueprint.url_prefix + blueprint.static_url_path
+               for blueprint in flask.current_app.blueprints.values()
+               if blueprint.static_url_path and blueprint.url_prefix]):
         return None
 
     # get email from header

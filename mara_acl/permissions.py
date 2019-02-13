@@ -1,14 +1,14 @@
 """Maintenance and querying of permissions"""
 
 import flask
-import mara_db.postgresql
-import sqlalchemy
-import sqlalchemy.ext.declarative
+import psycopg2.extensions
+import psycopg2.extras
 import sqlalchemy.orm
+from sqlalchemy.ext.declarative import declarative_base
+
+import mara_db.postgresql
 from mara_acl import config, keys, users
 from mara_page import acl
-from sqlalchemy.ext.declarative import declarative_base
-import psycopg2.extensions
 
 Base = declarative_base()
 
@@ -102,4 +102,3 @@ def initialize_permissions():
         for user_key, resource_key in config.initial_permissions().values():
             cursor.execute(f"INSERT INTO acl_permission (user_key, resource_key) VALUES ({'%s, %s'})",
                            (user_key, resource_key))
-

@@ -40,5 +40,5 @@ def require_email_http_header() -> str:
 
 def whitelisted_uris() -> [str]:
     """Which uris to exclude from the acl"""
-    return ['/static/']
+    return []
 
