@@ -30,6 +30,14 @@ def email_http_header() -> str:
     return 'X_FORWARDED_EMAIL'
 
 
+def require_email_http_header() -> str:
+    """
+    Whether the email http header needs to be present in the request.
+    If disabled, then "guest@localhost" will be used.
+    Don't disable on production
+    """
+    return True
+
 def whitelisted_uris() -> [str]:
     """Which uris to exclude from the acl"""
     return ['/static/']

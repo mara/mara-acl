@@ -104,7 +104,14 @@ def login():
            if blueprint.static_url_path and blueprint.url_prefix])):
         return None
 
-    email = flask.request.headers.get(config.email_http_header()) or 'guest@localhost'
+    # get email from header
+    email = flask.request.headers.get(config.email_http_header())
+    if not email:
+        if config.require_email_http_header():
+            flask.abort(400, f'HTTP header "{config.email_http_header()}" not set and request URI not whitelisted.')
+        else:
+            email = 'guest@localhost'
+
     if not users.login(email):
         flask.abort(403, 'Hi ' + email + ',<br/><br/>We haven\'t created an account for you yet. '
                     + 'Please contact the person that gave you the link this site to fix that.')
