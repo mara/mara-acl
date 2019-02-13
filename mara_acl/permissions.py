@@ -25,14 +25,6 @@ class Permission(Base):
         super().__init__()
 
 
-def current_user_has_permission(resource: acl.AclResource) -> bool:
-    """Returns whether the current user is allowed to access a specific resource"""
-    with mara_db.postgresql.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
-        cursor.execute(f"""SELECT EXISTS (SELECT 1 FROM acl_permission WHERE {'%s'} LIKE CONCAT(resource_key, '%%') AND {'%s'} LIKE CONCAT(user_key,'%%'))""",
-                       (keys.resource_key(resource),
-                        keys.user_key(getattr(flask.g, 'current_user_role'), getattr(flask.g, 'current_user_email'))))
-        return cursor.fetchone()[0]
-
 
 def current_user_has_permissions(resources: [acl.AclResource]) -> [[acl.AclResource, bool]]:
     """Determines whether the currently logged in user has permissions for a list of resources"""
@@ -52,15 +44,15 @@ SELECT EXISTS (SELECT 1 FROM acl_permission
         return (list(zip(resources, [allowed for (allowed,) in cursor.fetchall()])))
 
 
-def user_has_permission(email: str, resource: acl.AclResource) -> bool:
-    """Whether a user is allowed to access a specific resource"""
+def user_has_permissions(email: str, resources: [acl.AclResource]) -> [[acl.AclResource, bool]]:
+    """Determines whether a user has permissions for a list of resources."""
     email = email.lower()  # make sure always same case is used
 
     if users.login(email) != True:
         print(f'could not login user "{email}"')
-        return False
+        return [[resource, False] for resource in resources]
 
-    return current_user_has_permission(resource)
+    return current_user_has_permissions(resources)
 
 
 def all_permissions() -> {str: [str, str]}:
