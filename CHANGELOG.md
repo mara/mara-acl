@@ -8,6 +8,7 @@
 - Remove functions `user_has_permission` and `current_user_has_permission` (they are now implemented in `mara_page.acl`)
 - Remove deprecated dependency_links
 - Bump minimum `mara-page` version to 1.4.0
+- In `current_user_has_permissions`: When requested for a parent resource, return `True` when permissions for one of the child resources exist 
 
 **required changes**
 
