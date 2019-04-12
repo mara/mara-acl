@@ -3,13 +3,12 @@ import typing
 from email.utils import parseaddr
 
 import flask
+import mara_db.postgresql
 import psycopg2.extensions
 import sqlalchemy.orm
-from sqlalchemy.ext.declarative import declarative_base
-
-import mara_db.postgresql
 from mara_acl import config, permissions
 from mara_page import response
+from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
@@ -37,7 +36,8 @@ def login(email: str) -> typing.Union[response.Response, bool]:
     """Logs in a previously authenticated user. Returns an error response or True upon successful login"""
     email = email.lower()  # make sure always same case is used
 
-    with mara_db.postgresql.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
+    with mara_db.postgresql.postgres_cursor_context('mara') as cursor:
+        
         # get user from db
         cursor.execute(f"SELECT email, role FROM acl_user WHERE email = {'%s'}", (email,))
         result = cursor.fetchone()
