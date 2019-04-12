@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.0 (2019-04-12)
+
+- Change MARA_XXX variables to functions to delay importing of imports
+
+**required changes** 
+
+- Update `mara-app` to `>=2.0.0`
+
+
 ## 1.5.0 (2019-02-13)
 
 - add config option `require_email_http_header` that enforces the presence of the email http header
