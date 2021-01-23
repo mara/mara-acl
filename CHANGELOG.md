@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.1 (2020-01-24)
+
+- Include all versioned package files in wheel (not only python files)
+
+
 ## 2.0.0 (2019-04-12)
 
 - Change MARA_XXX variables to functions to delay importing of imports

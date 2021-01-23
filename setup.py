@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='mara-acl',
-    version='2.0.0',
+    version='2.0.1',
 
     description='Default ACL implementation for Mara',
 
@@ -12,6 +12,9 @@ setup(
         'mara-db >= 1.3.0',
         'mara-page >= 1.4.0'
     ],
+
+    setup_requires=['setuptools_scm'],
+    include_package_data=True,
 
     packages=find_packages(),
 
