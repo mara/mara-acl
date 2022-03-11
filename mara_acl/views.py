@@ -104,6 +104,27 @@ def login():
                if blueprint.static_url_path and blueprint.url_prefix]):
         return None
 
+    result = _handle_login()
+
+    if not isinstance(result, str):
+        return result
+
+    email = result
+    if not users.login(email):
+        flask.abort(403, 'Hi ' + email + ',<br/><br/>We haven\'t created an account for you yet. '
+                    + 'Please contact the person that gave you the link this site to fix that.')
+
+
+def _handle_login() -> str:
+    """
+    Handles the login process
+    
+    Returns:
+        Null when the page is whiltelisted
+        flask.redirect when the page shall be forwareded to a authentication page
+        email as str when the user is logged in.
+    """
+
     # get email from header
     email = flask.request.headers.get(config.email_http_header())
     if not email:
@@ -112,6 +133,4 @@ def login():
         else:
             email = 'guest@localhost'
 
-    if not users.login(email):
-        flask.abort(403, 'Hi ' + email + ',<br/><br/>We haven\'t created an account for you yet. '
-                    + 'Please contact the person that gave you the link this site to fix that.')
+    return email
