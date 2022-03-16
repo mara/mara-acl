@@ -2,7 +2,7 @@
 
 Default ACL implementation for mara with the following design choices:
 
-- Authentication of users is handled externally, e.g. through a [Bitly oauth2 proxy](https://github.com/bitly/oauth2_proxy). 
+- Authentication of users is handled externally, e.g. through a [Oauth2 Proxy](https://github.com/oauth2-proxy/oauth2-proxy). 
   An upstream authentication app manages authentication and then adds a http header identifying the user to each authenticated request.
 - Each user is assigned a single role.
 - Permissions are not based on urls, but on application-defined "resources". 
@@ -23,7 +23,7 @@ Individual users inherit permissions from their role, and permissions on higher 
 ![User management](docs/permissions.gif)
 
 
-Each new user that is authenticated through the external authentication proxy is automatically created 
+Each new user that is authenticated is automatically created 
 with a default role in the acl:
 ![User management](docs/automatic-user-creation.png)
 
