@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.0 (2022-03-16)
+
+- fix issue with untracked folder `.eggs/` since version 2.0.1
+- make the login process patchable. With his it is possible to implement a custom authentication handling
+
 ## 2.0.1 (2020-01-24)
 
 - Include all versioned package files in wheel (not only python files)
