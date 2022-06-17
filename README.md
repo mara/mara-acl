@@ -36,3 +36,12 @@ This behavior can be switched off (so that only invited users can join). See [co
 
 
 Please have a look at the mara example application for how to integrate this ACL implementation.
+
+
+## Links
+
+* Documentation: https://mara-acl.readthedocs.io/en/stable/
+* Changes: https://mara-acl.readthedocs.io/en/stable/changes.html
+* PyPI Releases: https://pypi.org/project/mara-acl/
+* Source Code: https://github.com/mara/mara-acl
+* Issue Tracker: https://github.com/mara/mara-acl/issues/
