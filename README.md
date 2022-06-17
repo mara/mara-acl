@@ -40,7 +40,7 @@ Please have a look at the mara example application for how to integrate this ACL
 
 ## Links
 
-* Documentation: https://mara-acl.readthedocs.io/en/stable/
+* Documentation: https://mara-acl.readthedocs.io/
 * Changes: https://mara-acl.readthedocs.io/en/stable/changes.html
 * PyPI Releases: https://pypi.org/project/mara-acl/
 * Source Code: https://github.com/mara/mara-acl
