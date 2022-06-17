@@ -21,9 +21,11 @@ project = 'Mara ACL'
 copyright = '2017-2022, Mara contributors'
 author = 'Mara contributors'
 
+# The short X.Y version.
+from mara_acl import __version__
+version = __version__
 # The full version, including alpha/beta/rc tags
-release = '2.1.1'
-version = '2.1'
+release = version
 
 
 # -- General configuration ---------------------------------------------------
