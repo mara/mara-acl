@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.1 (2022-06-17)
+
+- fix add missing folders in setuptools build
+- fix PyPI readme images (requires a new version)
+
 ## 2.1.0 (2022-03-16)
 
 - fix issue with untracked folder `.eggs/` since version 2.0.1
