@@ -1,7 +1,7 @@
 # Mara ACL
 
 [![mara-acl](https://github.com/mara/mara-acl/actions/workflows/build.yaml/badge.svg)](https://github.com/mara/mara-page/actions/workflows/build.yaml)
-[![PyPI - License](https://img.shields.io/pypi/l/mara-acl.svg)](https://github.com/mara/mara-acl/blob/master/LICENSE)
+[![PyPI - License](https://img.shields.io/pypi/l/mara-acl.svg)](https://github.com/mara/mara-acl/blob/main/LICENSE)
 [![PyPI version](https://badge.fury.io/py/mara-acl.svg)](https://badge.fury.io/py/mara-acl)
 [![Slack Status](https://img.shields.io/badge/slack-join_chat-white.svg?logo=slack&style=social)](https://communityinviter.com/apps/mara-users/public-invite)
 
@@ -15,7 +15,7 @@ Default ACL implementation for mara with the following design choices:
 
 The ACL provides a single UI for both user and permission management. 
 Users can be added / removed and their roles can be changed like this:
-![User management](https://github.com/mara/mara-acl/raw/master/docs/_static/users-and-roles.gif)
+![User management](https://github.com/mara/mara-acl/raw/main/docs/_static/users-and-roles.gif)
 
 New roles are created by moving a user to a new role.
 
@@ -25,14 +25,14 @@ Permissions can be set for
 - an individual resource, a group of resources or "All" resources.
 
 Individual users inherit permissions from their role, and permissions on higher levels overwrite permissions on lower levels:
-![User management](https://github.com/mara/mara-acl/raw/master/docs/_static/permissions.gif)
+![User management](https://github.com/mara/mara-acl/raw/main/docs/_static/permissions.gif)
 
 
 Each new user that is authenticated is automatically created 
 with a default role in the acl:
-![User management](https://github.com/mara/mara-acl/raw/master/docs/_static/automatic-user-creation.png)
+![User management](https://github.com/mara/mara-acl/raw/main/docs/_static/automatic-user-creation.png)
 
-This behavior can be switched off (so that only invited users can join). See [config.py](https://github.com/mara/mara-acl/blob/master/mara_acl/config.py) for details. 
+This behavior can be switched off (so that only invited users can join). See [config.py](https://github.com/mara/mara-acl/blob/main/mara_acl/config.py) for details. 
 
 
 Please have a look at the mara example application for how to integrate this ACL implementation.
