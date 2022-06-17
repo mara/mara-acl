@@ -1,14 +1,14 @@
 """User management"""
 import typing
 from email.utils import parseaddr
-
 import flask
-import mara_db.postgresql
-import psycopg2.extensions
 import sqlalchemy.orm
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+
 from mara_acl import config, permissions
 from mara_page import response
-from sqlalchemy.ext.declarative import declarative_base
+import mara_db.sqlalchemy_engine
 
 Base = declarative_base()
 
@@ -36,20 +36,19 @@ def login(email: str) -> typing.Union[response.Response, bool]:
     """Logs in a previously authenticated user. Returns an error response or True upon successful login"""
     email = email.lower()  # make sure always same case is used
 
-    with mara_db.postgresql.postgres_cursor_context('mara') as cursor:
-        
+    Session = sessionmaker(bind=mara_db.sqlalchemy_engine.engine('mara'))
+    with Session() as session:
         # get user from db
-        cursor.execute(f"SELECT email, role FROM acl_user WHERE email = {'%s'}", (email,))
-        result = cursor.fetchone()
+        result = session.query(User.email, User.role).filter(User.email == email).first()
 
         if not result:
-            cursor.execute(f"SELECT * FROM acl_user")
-            is_first_user = not cursor.fetchone()
+            is_first_user = not session.query(User.query().exists()).scalar()
 
             if is_first_user or config.automatically_create_accounts_for_new_users():
                 role = config.role_for_new_user(is_first_user, email)
                 # when first user or when configured, create a new user for a new email
-                cursor.execute(f"INSERT INTO acl_user (email, role) VALUES ({'%s, %s'})", (email, role))
+                session.insert(User).values(email=email, role=role)
+                session.commit()
 
                 # in case this the first login ever, apply default permissions
                 if is_first_user:
@@ -92,14 +91,15 @@ def add_user(email: str, role: str):
         flask.flash('Could not add <b>"' + email + '"</b>, missing role', category='warning')
         return
 
-    with mara_db.postgresql.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
+    Session = sessionmaker(bind=mara_db.sqlalchemy_engine.engine('mara'))
+    with Session() as session:
         # get user from db
-        cursor.execute(f"SELECT 1 FROM acl_user WHERE email = {'%s'}", (email,))
-        if cursor.fetchone():
+        if session.query(User.query().filter(User.email == email).exists()).scalar():
             flask.flash('User <b>"' + email + '"</b> already exists', category='warning')
             return
 
-        cursor.execute(f"INSERT INTO acl_user (email, role) VALUES ({'%s, %s'})", (email, role))
+        session.insert(User).values(email=email, role=role)
+        session.commit()
 
     flask.flash('Added user "' + email
                 + '". No email has been sent, please manually send an invitation via <a href=\'mailto:'
@@ -108,11 +108,15 @@ def add_user(email: str, role: str):
 
 def delete_user(email):
     """deletes a user"""
-    with mara_db.postgresql.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
-        cursor.execute(f"DELETE FROM acl_user WHERE email = {'%s'}", (email,))
+    Session = sessionmaker(bind=mara_db.sqlalchemy_engine.engine('mara'))
+    with Session() as session:
+        session.delete(User).filter(User.email == email)
+        session.commit()
 
 
 def change_role(email, new_role):
     """sets a new role for a user"""
-    with mara_db.postgresql.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
-        cursor.execute(f"UPDATE acl_user SET role = {'%s'} WHERE email = {'%s'}", (new_role, email))
+    Session = sessionmaker(bind=mara_db.sqlalchemy_engine.engine('mara'))
+    with Session() as session:
+        session.update(User).where(User.email == email).values(User.role == new_role)
+        session.commit()

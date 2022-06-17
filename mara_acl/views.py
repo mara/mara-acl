@@ -1,12 +1,14 @@
 """ACL UI"""
 
 import json
-
 import flask
-import mara_db.postgresql
-import psycopg2.extensions
+from sqlalchemy.orm import sessionmaker
+
 from mara_acl import config, keys, permissions, users
 from mara_page import acl, navigation, response, bootstrap
+import mara_db.sqlalchemy_engine
+
+from .users import User
 
 blueprint = flask.Blueprint('mara_acl', __name__, static_folder='static', url_prefix='/acl',
                             template_folder='templates')
@@ -31,9 +33,11 @@ def navigation_entry():
 def acl_page():
     roles = {}
 
-    with mara_db.postgresql.postgres_cursor_context('mara') as cursor:  # type: psycopg2.extensions.cursor
-        cursor.execute(f'SELECT email, role FROM acl_user ORDER BY role')
-        for email, role in cursor.fetchall():
+    engine = mara_db.sqlalchemy_engine.engine('mara')
+    Session = sessionmaker(bind=engine)
+
+    with Session() as session:
+        for email, role in session.query(User.email, User.role).order_by(User.role).all():
             rolekey = keys.user_key(role)
             if not rolekey in roles:
                 roles[rolekey] = {'name': role, 'users': {}}
