@@ -1,5 +1,10 @@
 # Mara ACL
 
+[![mara-acl](https://github.com/mara/mara-acl/actions/workflows/build.yaml/badge.svg)](https://github.com/mara/mara-page/actions/workflows/build.yaml)
+[![PyPI - License](https://img.shields.io/pypi/l/mara-acl.svg)](https://github.com/mara/mara-acl/blob/master/LICENSE)
+[![PyPI version](https://badge.fury.io/py/mara-acl.svg)](https://badge.fury.io/py/mara-acl)
+[![Slack Status](https://img.shields.io/badge/slack-join_chat-white.svg?logo=slack&style=social)](https://communityinviter.com/apps/mara-users/public-invite)
+
 Default ACL implementation for mara with the following design choices:
 
 - Authentication of users is handled externally, e.g. through a [Oauth2 Proxy](https://github.com/oauth2-proxy/oauth2-proxy). 
