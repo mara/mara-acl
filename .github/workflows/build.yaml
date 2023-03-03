@@ -30,4 +30,4 @@ jobs:
           echo Finished successful build with Python $pythonversion
 #      - name: Test with pytest
 #        run: |
-#          pytest -v tests 
+#          pytest -v tests

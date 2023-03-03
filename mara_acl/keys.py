@@ -19,4 +19,3 @@ def resource_key(resource: acl.AclResource) -> str:
     """Computes a unique key for a permission"""
     return (resource_key(resource.parent) if resource.parent else 'resource__All') \
            + '__' + escape_key(resource.name)
-

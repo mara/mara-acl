@@ -37,7 +37,7 @@ def login(email: str) -> typing.Union[response.Response, bool]:
     email = email.lower()  # make sure always same case is used
 
     with mara_db.postgresql.postgres_cursor_context('mara') as cursor:
-        
+
         # get user from db
         cursor.execute(f"SELECT email, role FROM acl_user WHERE email = {'%s'}", (email,))
         result = cursor.fetchone()

@@ -34,8 +34,8 @@ def current_user_has_permissions(resources: [acl.AclResource]) -> [[acl.AclResou
         # create a select statement for each resource and combine them with ' UNION ALL '
         cursor.execute(' UNION ALL '.join([
             cursor.mogrify(f"""
-SELECT EXISTS (SELECT 1 FROM acl_permission 
-               WHERE ({'%s'} LIKE CONCAT(resource_key, '%%') OR resource_key LIKE CONCAT({'%s'}, '%%')) 
+SELECT EXISTS (SELECT 1 FROM acl_permission
+               WHERE ({'%s'} LIKE CONCAT(resource_key, '%%') OR resource_key LIKE CONCAT({'%s'}, '%%'))
                    AND {'%s'} LIKE CONCAT(user_key,'%%'))
 """,
                            (keys.resource_key(resource), keys.resource_key(resource), user_key)).decode("utf-8")

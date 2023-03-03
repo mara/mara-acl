@@ -118,7 +118,7 @@ def login():
 def _handle_login() -> str:
     """
     Handles the login process
-    
+
     Returns:
         Null when the page is whiltelisted
         flask.redirect when the page shall be forwareded to a authentication page
